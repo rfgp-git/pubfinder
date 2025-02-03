@@ -88,16 +88,14 @@
 </body>
 
 <script>
-    const btn_find = document.getElementById('findpub');
+    // global variables
     const sb_days = document.getElementById('day_selector');
     const tbl_foundpubs = document.getElementById('pub_table');
     let tbl_body;
     
-    function btn_findpub_clicked(){
-        console.log("Selected Day: " + sb_days.value);
-        findopenpubs(sb_days.value);
-    }
-    //alert (navigator.userAgent);
+    // different events are used in chrome desktop browser and on apple mobile devices
+    // Chrome:          onclick
+    // Apple mobile:    ontouchstart
     if (navigator.userAgent.indexOf("Chrome") > -1) {
         console.log("Chrome");
         document.getElementById('findpub').onclick = btn_findpub_clicked;
@@ -106,7 +104,14 @@
         console.log("No Chrome");
         document.getElementById('findpub').ontouchstart = btn_findpub_clicked;
     }
+
+    // this function is called when the button with the id findpub is clicked
+    function btn_findpub_clicked(){
+        console.log("Selected Day: " + sb_days.value);
+        findopenpubs(sb_days.value);
+    }
     
+    // set the default day in the day selection list
     function setDefault() {
         document.body.style.overflow = "auto";
         const currentDate = new Date();
@@ -115,6 +120,146 @@
         sb_days[today].selected=true;
     }
 
+    // central function to find open pubs and fill the found pubs array with the pub objects
+    // after the array has been filled, the data is transferred to the table (createTableData)
+    function findopenpubs(sday) {
+    
+        const arr_foundpubs = new Array();
+        
+        for(let i = 1; i < tbl_foundpubs.rows.length;){
+            tbl_foundpubs.deleteRow(i);
+        }
+
+        // loop through the pub json list to find a pub for the selected short day
+        for (let i = 0; i < pubs.length; i++) {
+            for (let j = 0; j < pubs[i].opendays.length; j++) {
+        
+                if (sday == pubs[i].opendays[j]) {
+                    
+                    let obj_pub = {
+                        "name":     pubs[i].name,
+                        "type":     pubs[i].type,
+                        "address":  pubs[i].address.zipcode + " " + pubs[i].address.location,
+                        "street":   pubs[i].address.street,
+                        "open":     pubs[i].openhours[j],
+                        "phone":    pubs[i].contact.phone,
+                        "homepage": pubs[i].contact.homepage,
+                        "mail":     pubs[i].contact.mail
+                    }
+                    arr_foundpubs.push(obj_pub);
+                } 
+            }   
+        }
+
+        if (arr_foundpubs.length == 0) {
+            alert("Kein Restaurant gefunden")
+        } else { 
+            createTableData(arr_foundpubs);
+        }
+    }
+
+    // create the html string for each row 
+    function createTableData (pub_array) {
+        let tbl_body = document.getElementById('pub_table_body');
+            
+        for (let i = 0; i < pub_array.length; i++) {
+            let hyp="";
+            let pub_imagelink="";
+            let email="";
+            let phone="";
+            // dtermine index number
+            let nr = padWithLeadingZeros(i+1, 2);
+            // get th ename of the image related to the pub type
+            let pub_type_image = "img/" + getImageName(pub_array[i].type);
+
+            // cretae URL string for the pub homepage
+            if (pub_array[i].homepage) {
+                hyp="<a href=" + pub_array[i].homepage + " " + "target=" + '"_blank"'  + ">" + pub_array[i].homepage  + "</a>";
+                pub_imagelink = "<a href=" + pub_array[i].homepage + " " + "target=" + '"_blank"'  + ">" + "<img src = " + pub_type_image + ">" + "</a>";
+            }
+            // create the mail URL string
+            if (pub_array[i].mail) {
+                email="<a href=" + "mailto:" + pub_array[i].mail + ">" + pub_array[i].mail + "</a>";
+            }
+            // creta the phone URL string
+            if (pub_array[i].phone) {
+                phone="<a href=" + "tel://" + pub_array[i].phone + ">" + pub_array[i].phone + "</a>";
+            }
+            
+            console.log(nr, " ",pub_array[i].type, pub_array[i].name, " ", pub_array[i].address, " ", pub_array[i].street, " ", pub_array[i].open);
+            console.log(hyp);
+            console.log(email);
+            console.log(phone);
+            let row = "<tr>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + nr + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_imagelink + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].name + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].open + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + phone + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].address + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].street + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + hyp + "</td>" +
+                                "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + email + "</td>" +
+                        "</tr>";
+
+            // add the row to the table
+            tbl_body.innerHTML += row;                          
+        }
+    }
+
+    // help function to generate leading zeroes
+    function padWithLeadingZeros(num, totalLength) {
+        return String(num).padStart(totalLength, '0');
+    }
+        
+    // function to get the image name to the corresponding pub type
+    function getImageName(type) {
+        let imagename = '';
+
+        switch(type) {
+            case 'fränkisch':
+            imagename = 'frankonia-flag.png';
+            break;
+            case 'italienisch':
+                imagename = 'italy-flag.png';
+            break;
+            case 'türkisch':
+                imagename = 'turkish-flag.png';
+            break;
+            case 'griechisch':
+                imagename = 'greece-flag.png';
+            break;
+            case 'Cafe':
+                imagename = 'coffee-flag.png';
+            break;
+            case 'serbisch':
+                imagename = 'serbia-flag.png';
+            break;
+            case 'thailändisch':
+                imagename = 'thailand-flag.png';
+            break;
+            case 'ungarisch':
+                imagename = 'hungary-flag.png';
+            break;
+            case 'amerikanisch':
+                imagename = 'usa-flag.png';
+            break;
+            case 'windbeutel':
+                imagename = 'windbeutel.png';
+            break;
+            case 'Steak':
+                imagename = 'tomahawk-steak.png';
+            break;
+            default:
+                imagename = '';
+        }
+        console.log('type:' + type );
+        console.log('image:' + "<" + imagename + ">");
+        return String(imagename);
+    }
+    
+
+    // filter for pub name or location
     function filterPubs(filterno) {
         // Declare variables
         let input, filter, table, tr, td, i, txtValue, col;
@@ -150,133 +295,5 @@
             }
         }
   }
-
-    function findopenpubs(sday) {
-    
-        const arr_foundpubs = new Array();
-        
-        for(let i = 1; i < tbl_foundpubs.rows.length;){
-            tbl_foundpubs.deleteRow(i);
-        }
-
-        // loop through the pub json list to find a pub for the selected short day
-        for (let i = 0; i < pubs.length; i++) {
-            for (let j = 0; j < pubs[i].opendays.length; j++) {
-        
-                if (sday == pubs[i].opendays[j]) {
-                    
-                    let obj_pub = {
-                        "name":     pubs[i].name,
-                        "type":     pubs[i].type,
-                        "address":  pubs[i].address.zipcode + " " + pubs[i].address.location,
-                        "street":   pubs[i].address.street,
-                        "open":     pubs[i].openhours[j],
-                        "phone":    pubs[i].contact.phone,
-                        "homepage": pubs[i].contact.homepage,
-                        "mail":     pubs[i].contact.mail
-                    }
-                    arr_foundpubs.push(obj_pub);
-                } 
-            }   
-        }
-
-        if (arr_foundpubs.length == 0) {
-            alert("Kein Restaurant gefunden")
-        } else { 
-            createTableData(arr_foundpubs);
-        }
-
-        function createTableData (pub_array) {
-            let tbl_body = document.getElementById('pub_table_body');
-            
-            for (let i = 0; i < pub_array.length; i++) {
-                let hyp="";
-                let pub_imagelink="";
-                let email="";
-                let phone="";
-                let nr = padWithLeadingZeros(i+1, 2);
-                let pub_type_image = "img/" + getImageName(pub_array[i].type);
-
-                
-
-                if (pub_array[i].homepage) {
-                    hyp="<a href=" + pub_array[i].homepage + " " + "target=" + '"_blank"'  + ">" + pub_array[i].homepage  + "</a>";
-                    pub_imagelink = "<a href=" + pub_array[i].homepage + " " + "target=" + '"_blank"'  + ">" + "<img src = " + pub_type_image + ">" + "</a>";
-                }
-                if (pub_array[i].mail) {
-                    email="<a href=" + "mailto:" + pub_array[i].mail + ">" + pub_array[i].mail + "</a>";
-                }
-                if (pub_array[i].phone) {
-                    phone="<a href=" + "tel://" + pub_array[i].phone + ">" + pub_array[i].phone + "</a>";
-                }
-                
-                console.log(nr, " ",pub_array[i].type, pub_array[i].name, " ", pub_array[i].address, " ", pub_array[i].street, " ", pub_array[i].open);
-                console.log(hyp);
-                console.log(email);
-                console.log(phone);
-                let row = "<tr>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + nr + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_imagelink + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].name + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].open + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + phone + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].address + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + pub_array[i].street + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + hyp + "</td>" +
-                                    "<td " + "class=" + "mdl-data-table__cell--non-numeric" +">" + email + "</td>" +
-                          "</tr>";
- 
-                tbl_body.innerHTML += row;                          
-            }
-        }
-        function padWithLeadingZeros(num, totalLength) {
-            return String(num).padStart(totalLength, '0');
-        }
-        
-        function getImageName(type) {
-            let imagename = '';
-
-                switch(type) {
-                    case 'fränkisch':
-                    imagename = 'frankonia-flag.png';
-                    break;
-                case 'italienisch':
-                    imagename = 'italy-flag.png';
-                break;
-                case 'türkisch':
-                    imagename = 'turkish-flag.png';
-                break;
-                case 'griechisch':
-                    imagename = 'greece-flag.png';
-                break;
-                case 'Cafe':
-                    imagename = 'coffee-flag.png';
-                break;
-                case 'serbisch':
-                    imagename = 'serbia-flag.png';
-                break;
-                case 'thailändisch':
-                    imagename = 'thailand-flag.png';
-                break;
-                case 'ungarisch':
-                    imagename = 'hungary-flag.png';
-                break;
-                case 'amerikanisch':
-                    imagename = 'usa-flag.png';
-                break;
-                case 'windbeutel':
-                    imagename = 'windbeutel.png';
-                break;
-                case 'Steak':
-                    imagename = 'tomahawk-steak.png';
-                break;
-                default:
-                // code block
-            }
-            console.log('type:' + type );
-            console.log('image:' + "<" + imagename + ">");
-            return String(imagename);
-        }
-    }
 </script>
 </html>
