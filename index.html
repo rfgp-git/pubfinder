@@ -126,9 +126,12 @@
     
         const arr_foundpubs = new Array();
         
+        // clear table and filters
         for(let i = 1; i < tbl_foundpubs.rows.length;){
             tbl_foundpubs.deleteRow(i);
         }
+        document.getElementById("Input_NameFilter").value='';
+        document.getElementById("Input_LocationFilter").value='';
 
         // loop through the pub json list to find a pub for the selected short day
         for (let i = 0; i < pubs.length; i++) {
