@@ -1,0 +1,75 @@
+#page_home {
+    padding: 10px;
+    overflow: scroll; 
+    overflow: auto;
+    display: grid;
+    gap: 10px;
+    grid-template-rows: repeat(1, 50px);
+    grid-template-columns: repeat(2 , 200px);
+    justify-items: left;
+    align-items: center;
+    
+}
+
+#page_pubmap {
+    padding: 10px;
+    overflow: scroll; 
+    overflow: auto;
+    display: grid;
+    gap: 10px;
+    grid-template-rows: repeat(1, 50px);
+    grid-template-columns: repeat(2 , 200px);
+    justify-items: left;
+    align-items: center;
+    
+}
+
+#page_help {
+    padding: 10px;
+    overflow: scroll; 
+    overflow: auto;
+}
+
+
+/*
+.mdl-textfield__input {
+    width: 40%;
+    
+    }
+
+
+.mdl-button {
+    left: 150px;
+    text-align: left;
+    width: 160px;
+    
+}
+*/
+
+.mdl-data-table__cell--non-numeric {
+    text-align: left;
+}
+
+.anchor_cell {
+    display: block;
+}
+
+#pub_map {
+    margin: 0;
+    padding: 0;
+    height: 80%;
+  }
+
+  #pub_address {
+    padding: 10px;
+    
+
+  }
+
+  #pub_opening {
+    padding: 10px;
+    
+
+  }
+
+
