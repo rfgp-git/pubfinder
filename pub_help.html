@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body onload ="getPubfinderVersion()">
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <header class="mdl-layout__header">
@@ -70,6 +70,12 @@
                     <br>
                     Die App dient nur zu privaten Zwecken und wird nicht kommerziell genutzt.
                     <br>
+                    <br>
+                    Version:
+                        <p>
+                            https://api.github.com/repos/$org/$repo/releases/latest
+                        </p>
+                    
                     <br>
                     Die Pubfinder App besteht aus drei Hauptseiten:
                     <ul>
@@ -141,15 +147,34 @@
                         <li>Öffnungszeiten (der aktuelle Tag incl. Öffnungszeiten wird „fett“ dargestellt)</li>
                     </ul>
                 </p>
-
-                
-                    
-
-
-                
-                
             </div>
         </main>
     </div>
 </body>
+<script>
+    const getPubfinderVersion = async () => {
+        // Define the GitHub username you want to fetch information for
+        const username = 'rfpg-git';
+
+        // Define the GitHub API URL for the user endpoint
+        const url = `https://api.github.com/users/${username}`;
+
+        // Use the Fetch API to make a GET request to the GitHub API
+        fetch(url)
+            .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Log the user data to the console
+            console.log(data);
+        })
+        .catch(error => {
+            // Handle any errors that occurred during the fetch
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+</script>
 </html>

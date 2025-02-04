@@ -1596,7 +1596,8 @@ let pubs = [{
     "opendays" : ["Mo","","Mi","Do","Fr","Sa","So"],
     "openhours" : ["11:00 - 14:30 & 17:00 - 22:00","", "11:00 - 14:30 & 17:00 - 22:00","11:00 - 14:30 & 17:00 - 22:00","11:00 - 14:30 & 17:00 - 22:00","11:00 - 14:00 & 17:00 - 22:00","11:00 - 14:00 & 17:00 - 22:00"],
     "comment" : null
-},{
+},
+{
     "name": "Südtiroler Stuben",
     "type": "italienisch",
     "address": {
@@ -1613,4 +1614,89 @@ let pubs = [{
     "openhours" : ["","17:00 - 23:00", "17:00 - 23:00","17:00 - 23:00","17:00 - 23:00","11:00 - 14:00 & 17:00 - 23:00",""],
     "comment" : null
 },
+{
+    "name": "Gasthaus Seitz",
+    "type": "fränkisch",
+    "address": {
+        "street": "Bernheck 17",
+        "zipcode" : 91287,
+        "location" : "Plech"
+    },
+    "contact": {
+        "phone" : "+4992441217",
+        "mail" : "",
+        "homepage" : "http://seitzbernheck.de/"
+    },
+    "opendays" : ["Mo","","Mi","Do","","Sa","So"],
+    "openhours" : ["11:30 - 14:30 & 17:00 - 21:00","", "11:30 - 14:30 & 17:00 - 21:00","11:30 - 14:30 & 17:00 - 21:00","","11:30 - 14:30 & 17:00 - 21:00","11:00 - 14:30 & 16:30 - 21:00"],
+    "comment" : null
+},
+{
+    "name": "Gasthaus Goldenes Herz",
+    "type": "fränkisch",
+    "address": {
+        "street": "Hauptstr. 12",
+        "zipcode" : 91287,
+        "location" : "Plech"
+    },
+    "contact": {
+        "phone" : "+499244398",
+        "mail" : " gasthaus-goldenes-herz@t-online.de",
+        "homepage" : "https://www.gasthaus-goldenes-herz.de/"
+    },
+    "opendays" : ["Mo","Di","","Do","Fr","Sa","So"],
+    "openhours" : ["11:00 - 14:00 & 17:00 - 22:00","11:00 - 14:00 & 17:00 - 22:00", "","11:00 - 14:00 & 17:00 - 22:00","11:00 - 14:00 & 17:00 - 22:00","11:00 - 14:00 & 17:00 - 22:00","11:00 - 14:00 & 17:00 - 22:00"],
+    "comment" : null
+},
+{
+    "name": "Gasthaus Rotes Roß",
+    "type": "fränkisch",
+    "address": {
+        "street": "Marktplatz 5",
+        "zipcode" : 90542,
+        "location" : "Eckental"
+    },
+    "contact": {
+        "phone" : "+4991261821",
+        "mail" : "info@fest-stodl.de",
+        "homepage" : "https://fest-stodl.de/"
+    },
+    "opendays" : ["","","Mi","Do","Fr","Sa","So"],
+    "openhours" : ["","", "17:00 - 23:00","17:00 - 23:00","17:00 - 23:00","17:00 - 23:00","09:00 - 14:30 & 17:00 - 23:00"],
+    "comment" : null
+},
+{
+    "name": "Taverna Ela Mesa",
+    "type": "griechisch",
+    "address": {
+        "street": "Eschenauer Hauptstr. 4",
+        "zipcode" : 90542,
+        "location" : "Eckental"
+    },
+    "contact": {
+        "phone" : "+499126284966",
+        "mail" : "",
+        "homepage" : "https://taverna-ela-mesa.com/"
+    },
+    "opendays" : ["Mo","","Mi","Do","Fr","Sa","So"],
+    "openhours" : ["17:00 - 23:00","", "17:00 - 23:00","17:00 - 23:00","17:00 - 23:00","17:00 - 23:00","11:00 - 14:00 & 17:00 - 23:00"],
+    "comment" : null
+},
+{
+    "name": "Restaurant Tai Pan",
+    "type": "chinesisch",
+    "address": {
+        "street": "Stöckacher Str. 2",
+        "zipcode" : 90542,
+        "location" : "Eckental"
+    },
+    "contact": {
+        "phone" : "+4991262970988",
+        "mail" : "Restaurant-Tai-Pan@t-online.de",
+        "homepage" : "https://restaurant-tai-pan-eckental.eatbu.com"
+    },
+    "opendays" : ["Mo","","Mi","Do","Fr","Sa","So"],
+    "openhours" : ["11:30 - 14:30 & 17:30 - 22:00","", "11:30 - 14:30 & 17:30 - 22:00","11:30 - 14:30 & 17:30 - 22:00","11:30 - 14:30 & 17:30 - 22:00","11:30 - 14:30 & 17:30 - 22:00","11:30 - 14:30 & 17:30 - 22:00"],
+    "comment" : null
+}
 ];
