@@ -69,6 +69,9 @@
     let markersArray    = new Array();
     let openInfoWindow = '';
 
+    // add markers with the address of the selected pub
+    // all pub markers of a region are displayed when "Alle" was selected
+    // the markers are saved in an array which can be used to remove the markers at the beginning 
     function btn_displaymap_clicked(){
             console.log("Selected pub coordinates: <" + sb_pubs.value + "> " + sb_pubs.options[sb_pubs.selectedIndex].text);
             console.log("Index:" + sb_pubs.selectedIndex);
@@ -80,6 +83,8 @@
             // set zoom level
             map.setZoom(12);
 
+            // Index = 0 => Alle
+            // Index <> 0 specific pub
             if (sb_pubs.selectedIndex == 0) {
                 for (let j = 1; j < sb_pubs.length; j++ ) {
                     let isOpen = checkpubStatus(sb_pubs.options[j].text);
@@ -92,7 +97,9 @@
             }
         }
 
-        //alert (navigator.userAgent);
+        // different events are used in chrome desktop browser and on apple mobile devices
+        // Chrome:          onclick
+        // Apple mobile:    ontouchstart
         if (navigator.userAgent.indexOf("Chrome") > -1) {
             console.log("Chrome");
             document.getElementById('displaymap').onclick = btn_displaymap_clicked;
@@ -105,6 +112,8 @@
     // Initialize and add the map
     let map;
 
+    // initiate map
+    // fill the region and pub selectors
     async function initMap() {
         
         // get pub locations
@@ -120,6 +129,8 @@
         
         // The map, centered at Schnaittach
         // mapId defined in the google cloud console
+        // mapID is created via https://console.cloud.google.com/
+        // Map Management https://console.cloud.google.com/google/maps-apis/studio/maps?inv=1&invt=Aborwg&project=subtle-presence-447610-t2
         map = new Map(document.getElementById("pub_map"), {
             zoom: 12,
             center: position,
@@ -138,6 +149,9 @@
         });
     }
 
+    // add marker based on the address in the pub list
+    // the glyph color is used to show if a pub is open or not
+    // the content string for the infowindow is created in the createContentString function
     function addMarker(address,sname,pubopen) {
 
         const geocoder = new google.maps.Geocoder();
@@ -154,16 +168,16 @@
                 }
 
                 const pinTextGlyph = new google.maps.marker.PinElement({
-                //glyph: "F",
                 glyphColor: statuscolor,
                 });
+
                 marker = new google.maps.marker.AdvancedMarkerElement({
                     map,
                     position: location,
                     title: sname,
                     content: pinTextGlyph.element,
-                    //label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: sname }
                 });
+                
                 markersArray.push(marker);
 
                 let contentString = createContentString(sname);
@@ -190,6 +204,9 @@
         });
     }
 
+    // create contentstring for the infowindow
+    // pub name, address and phone number
+    //
     function createContentString(pub_name) {
 
         let contentStringHead = '';
@@ -218,8 +235,6 @@
                     
                     sday=arr_days[j] + ': ';
 
-                    //console.log('opendays: ' + pubs[i].opendays[j]);
-                    
                     if (pubs[i].opendays[j] == '') {
                         openhours = 'Ruhetag';
                     }
@@ -245,21 +260,9 @@
 
     }
 
-    // Date.getDay() returns a number from 0 (Sunday) to 6 (Saturday)
-    // but the pub finder uses a number from 0 (Monday) to 6 (Sunday)
-    function switchIndex(dayIndex) {
-
-        let newIndex = 0;
-
-        if (dayIndex == 0){
-            newIndex= 6;
-        }
-        else {
-            newIndex = dayIndex -1;
-        }
-        return newIndex;
-    }
-
+    // find out if a pub is open or not
+    // there can be time ranges in the morning and in the afternoon seperated by an &
+    // e.g. 11:00 - 14:00 & 17:00 - 22:00
     function checkpubStatus(pub) {
         let open = false;
         const currentDate = new Date();
@@ -282,17 +285,17 @@
                             let period = pubs[i].openhours[j].replaceAll(' ','').split('&');
                             console.log('period: ' + '<' + period[0] + '>' + '<' + period[1] + '>');
 
-                            let stenpoint = period[0].split('-');
-                            open=isTimeInRange(currentTime, stenpoint[0], stenpoint[1]);
+                            let startendpoint = period[0].split('-');
+                            open=isTimeInRange(currentTime, startendpoint[0], startendpoint[1]);
 
                             if (open == false) {
-                                stenpoint = period[1].split('-'); 
-                                open=isTimeInRange(currentTime, stenpoint[0], stenpoint[1]);
+                                startendpoint = period[1].split('-'); 
+                                open=isTimeInRange(currentTime, startendpoint[0], startendpoint[1]);
                             }
                         } else {
                             console.log("Substring & not found");
-                            let stenpoint = pubs[i].openhours[j].replaceAll(' ','').split('-');
-                            open=isTimeInRange(currentTime, stenpoint[0], stenpoint[1]);
+                            let startendpoint = pubs[i].openhours[j].replaceAll(' ','').split('-');
+                            open=isTimeInRange(currentTime, startendpoint[0], startendpoint[1]);
                         }
                         console.log('open: ' + open)
                     }
@@ -302,27 +305,8 @@
         return open;
     }
 
-    function isTimeInRange(curtime, startTime, endTime) {
-        // Convert time to minutes
-            const toMinutes = (time) => {
-            const [hours, minutes] = time.split(':').map(Number);
-            return hours * 60 + minutes;
-        };
-        console.log('isTimeinRange: ' + curtime + " " + startTime + " " + endTime);
-        const timeMinutes = toMinutes(curtime);
-        const startMinutes = toMinutes(startTime);
-        const endMinutes = toMinutes(endTime);
-
-        // Check whether the time is within the range
-        if (startMinutes <= endMinutes) {
-            return timeMinutes >= startMinutes && timeMinutes <= endMinutes;
-        } else {
-            // Period over midnight
-            return timeMinutes >= startMinutes || timeMinutes <= endMinutes;
-        }
-    }
-
-   
+    // get the city or region of the pub configured in the pub list
+    // and fill the pubs dropdown list with the pubs of the region
     function getpubLocations(){
         const arr_publocations = new Array();
         let sb_region=document.getElementById("region_selector");
@@ -362,18 +346,8 @@
         getregionPubs(sb_region.value);
     }
 
-    function getselectedRegion() {
-        let sb_region=document.getElementById("region_selector");
-        console.log("region: " + sb_region.value + " " + sb_region.options[sb_region.selectedIndex].text); 
-        getregionPubs(sb_region.value);
-        let location= sb_region.value + " " + sb_region.options[sb_region.selectedIndex].text;
-        moveToLocation(location);
-    }
-
-    function getselectedPub() {
-        console.log("selected:" + sb_pubs.selectedIndex);
-    }
-
+    // get all pubs beloning to the zipcode
+    // and fill the pub_selector
     function getregionPubs(zipcode) {
         const arr_pubregions = new Array();
         let sb_regionpubs=document.getElementById("pub_selector");
@@ -409,6 +383,18 @@
             sb_regionpubs.options.add(opt); 
         }
     }
+
+    // onchange region_selector
+    // refill the pub_seelctor and move to the new location
+    function getselectedRegion() {
+        let sb_region=document.getElementById("region_selector");
+        console.log("region: " + sb_region.value + " " + sb_region.options[sb_region.selectedIndex].text); 
+        getregionPubs(sb_region.value);
+        let location= sb_region.value + " " + sb_region.options[sb_region.selectedIndex].text;
+        moveToLocation(location);
+    }
+
+    // zoom to the selected region
     function moveToLocation(address){
         console.log("loc: " + address);
         const geocoder = new google.maps.Geocoder();
@@ -422,6 +408,47 @@
                 console.error('Geocode was not successful for the following reason: ' + status);
             }
         });
+    }
+
+    // Check whether the curren time is between start and endtime
+    function isTimeInRange(curtime, startTime, endTime) {
+        // Convert time to minutes
+            const toMinutes = (time) => {
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+        console.log('isTimeinRange: ' + curtime + " " + startTime + " " + endTime);
+        const timeMinutes = toMinutes(curtime);
+        const startMinutes = toMinutes(startTime);
+        const endMinutes = toMinutes(endTime);
+
+        // Check whether the time is within the range
+        if (startMinutes <= endMinutes) {
+            return timeMinutes >= startMinutes && timeMinutes <= endMinutes;
+        } else {
+            // Period over midnight
+            return timeMinutes >= startMinutes || timeMinutes <= endMinutes;
+        }
+    }
+
+    // Date.getDay() returns a number from 0 (Sunday) to 6 (Saturday)
+    // but the pub finder uses a number from 0 (Monday) to 6 (Sunday)
+    function switchIndex(dayIndex) {
+
+        let newIndex = 0;
+
+        if (dayIndex == 0){
+            newIndex= 6;
+        }
+        else {
+            newIndex = dayIndex -1;
+        }
+        return newIndex;
+    }
+
+    // dummy
+    function getselectedPub() {
+        console.log("selected:" + sb_pubs.selectedIndex);
     }
 
 </script>
