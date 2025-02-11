@@ -116,37 +116,64 @@
     // fill the region and pub selectors
     async function initMap() {
         
-        // get pub locations
-        console.log("getLocations");
-        getpubLocations();
+        let retString = null;
+        // get pubs from csv
+        // Retrieve the JSON string from local storage
+        retString = localStorage.getItem("restaurants");
         
-        // position of schnaittach
-        const position = { lat: 49.559615280175386, lng: 11.340586353371648 };
+        if (retString != null) {
+            // Convert the JSON string back to an array
+            let retArray = JSON.parse(retString);
+            pubs=[];
         
-        // Request needed libraries.
-        const { Map } = await google.maps.importLibrary("maps");
-        const {AdvancedMarkerElement} = await google.maps.importLibrary("marker");
-        
-        // The map, centered at Schnaittach
-        // mapId defined in the google cloud console
-        // mapID is created via https://console.cloud.google.com/
-        // Map Management https://console.cloud.google.com/google/maps-apis/studio/maps?inv=1&invt=Aborwg&project=subtle-presence-447610-t2
-        map = new Map(document.getElementById("pub_map"), {
-            zoom: 12,
-            center: position,
-            mapId:"c9787370aaddc781",
-        });
-        const pinTextGlyph = new google.maps.marker.PinElement({
-                glyph: "H",
-                glyphColor: "white",
-        });
+            for(let i = 0; i < retArray.length; i++){
+                let objcsvpub = {
+                            "name":      retArray[i].name,
+                            "type":      retArray[i].type,
+                            "address":   JSON.parse(retArray[i].address),
+                            "contact":   JSON.parse(retArray[i].contact),
+                            "opendays":  JSON.parse(retArray[i].opendays),
+                            "openhours": JSON.parse(retArray[i].openhours),
+                            "comment":   retArray[i].comment
+                            
+                        }
+                pubs.push(objcsvpub);
+            }
 
-        marker = new google.maps.marker.AdvancedMarkerElement({
-        map,
-        position: position,
-        title: "Home",
-        content: pinTextGlyph.element
-        });
+            // get pub locations
+            console.log("getLocations");
+            getpubLocations();
+            
+            // position of schnaittach
+            const position = { lat: 49.559615280175386, lng: 11.340586353371648 };
+            
+            // Request needed libraries.
+            const { Map } = await google.maps.importLibrary("maps");
+            const {AdvancedMarkerElement} = await google.maps.importLibrary("marker");
+            
+            // The map, centered at Schnaittach
+            // mapId defined in the google cloud console
+            // mapID is created via https://console.cloud.google.com/
+            // Map Management https://console.cloud.google.com/google/maps-apis/studio/maps?inv=1&invt=Aborwg&project=subtle-presence-447610-t2
+            map = new Map(document.getElementById("pub_map"), {
+                zoom: 12,
+                center: position,
+                mapId:"c9787370aaddc781",
+            });
+            const pinTextGlyph = new google.maps.marker.PinElement({
+                    glyph: "H",
+                    glyphColor: "white",
+            });
+
+            marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position: position,
+            title: "Home",
+            content: pinTextGlyph.element
+            });
+        } else {
+            alert("Pub Konfiurations-Daten müssen erst importiert werden");
+        }
     }
 
     // add marker based on the address in the pub list
@@ -235,7 +262,7 @@
                     
                     sday=arr_days[j] + ': ';
 
-                    if (pubs[i].opendays[j] == '') {
+                    if (pubs[i].opendays[j] == 'x') {
                         openhours = 'Ruhetag';
                     }
                     else {

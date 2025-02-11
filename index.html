@@ -95,6 +95,7 @@
     const tbl_foundpubs = document.getElementById('pub_table');
     let tbl_body;
     
+    
     // different events are used in chrome desktop browser and on apple mobile devices
     // Chrome:          onclick
     // Apple mobile:    ontouchstart
@@ -110,7 +111,35 @@
     // this function is called when the button with the id findpub is clicked
     function btn_findpub_clicked(){
         console.log("Selected Day: " + sb_days.value);
-        findopenpubs(sb_days.value);
+        let retString = null;
+
+        // Retrieve the JSON string from local storage
+        retString = localStorage.getItem("restaurants");
+
+        if (retString != null) {
+
+            // Convert the JSON string back to an array
+            let retArray = JSON.parse(retString);
+            pubs=[];
+        
+            for(let i = 0; i < retArray.length; i++){
+                let objcsvpub = {
+                            "name":      retArray[i].name,
+                            "type":      retArray[i].type,
+                            "address":   JSON.parse(retArray[i].address),
+                            "contact":   JSON.parse(retArray[i].contact),
+                            "opendays":  JSON.parse(retArray[i].opendays),
+                            "openhours": JSON.parse(retArray[i].openhours),
+                            "comment":   retArray[i].comment
+                            
+                        }
+                pubs.push(objcsvpub);
+            }
+            findopenpubs(sb_days.value);
+        } else {
+            alert("Pub Konfiurations-Daten müssen erst importiert werden");
+        }
+         
     }
     
     // set the default day in the day selection list
@@ -129,7 +158,7 @@
         const arr_foundpubs = new Array();
         
         // clear table and filters
-        for(let i = 1; i < tbl_foundpubs.rows.length;){
+        for(let i = 1; i < tbl_foundpubs.rows.length;i++){
             tbl_foundpubs.deleteRow(i);
         }
         document.getElementById("Input_NameFilter").value='';
@@ -138,7 +167,6 @@
         // loop through the pub json list to find a pub for the selected short day
         for (let i = 0; i < pubs.length; i++) {
             for (let j = 0; j < pubs[i].opendays.length; j++) {
-        
                 if (sday == pubs[i].opendays[j]) {
                     
                     let obj_pub = {
