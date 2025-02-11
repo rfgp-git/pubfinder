@@ -112,6 +112,7 @@
     function btn_findpub_clicked(){
         console.log("Selected Day: " + sb_days.value);
         let retString = null;
+        pubs=[];
 
         // Retrieve the JSON string from local storage
         retString = localStorage.getItem("restaurants");
@@ -120,7 +121,6 @@
 
             // Convert the JSON string back to an array
             let retArray = JSON.parse(retString);
-            pubs=[];
         
             for(let i = 0; i < retArray.length; i++){
                 let objcsvpub = {
@@ -158,9 +158,10 @@
         const arr_foundpubs = new Array();
         
         // clear table and filters
-        for(let i = 1; i < tbl_foundpubs.rows.length;i++){
+        for(let i = 1; i < tbl_foundpubs.rows.length;i){
             tbl_foundpubs.deleteRow(i);
         }
+        
         document.getElementById("Input_NameFilter").value='';
         document.getElementById("Input_LocationFilter").value='';
 
