@@ -36,12 +36,26 @@
     overflow: auto;
 }
 
-/*
-#file {
-     display: none;
+#page_settings {
+    padding: 40px;
+    overflow: scroll; 
+    overflow: auto;
+    display: grid;
+    gap: 20px;
 }
 
-*/
+fieldset {
+    width: 275px;
+    border: 1px solid #666 !important;
+    padding:10px !important;
+}
+
+legend {
+    padding: 1px 10px !important;
+    float:none;
+    width:auto;
+}
+
 
 .mdl-data-table__cell--non-numeric {
     text-align: left;

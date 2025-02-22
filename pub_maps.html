@@ -162,6 +162,10 @@
                 center: position,
                 mapId:"c9787370aaddc781",
             });
+
+            getselectedRegion();
+
+            /*
             const pinTextGlyph = new google.maps.marker.PinElement({
                     glyph: "H",
                     glyphColor: "white",
@@ -173,6 +177,7 @@
             title: "Home",
             content: pinTextGlyph.element
             });
+            */
         } else {
             alert("Pub Konfiurations-Daten müssen erst importiert werden");
         }
@@ -358,14 +363,15 @@
         }
         console.log("length: " + arr_publocations.length);
         arr_publocations.sort((a, b) => a.city.localeCompare(b.city));
-
+        let zipcode=getDefaultZipCode();
         for (let j = 0; j < arr_publocations.length; j++) {
             console.log("location: " + arr_publocations[j].zipcode + " " + arr_publocations[j].city);
             let opt = document.createElement("option"); 
             opt.text = arr_publocations[j].city;
             opt.value = arr_publocations[j].zipcode;
             sb_region.options.add(opt); 
-            if (opt.value == 91220){
+            
+            if (opt.value == zipcode){
                 default_region_Index=j;
             } 
         }
@@ -473,6 +479,22 @@
             newIndex = dayIndex -1;
         }
         return newIndex;
+    }
+
+    // dummy
+    function getDefaultZipCode() {
+        let retString = null;
+        let zipcode=91220;
+        
+        // Retrieve the JSON string from local storage
+        retString = localStorage.getItem("defaultlocation");
+        if (retString != null){
+            let retlocation = JSON.parse(retString);
+            zipcode = retlocation.zipcode;
+        }
+        
+        return zipcode;
+        
     }
 
     // dummy
