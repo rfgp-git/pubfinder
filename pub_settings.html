@@ -215,9 +215,11 @@ function getpubLocations(){
         opt.text = arr_publocations[j].city;
         opt.value = arr_publocations[j].zipcode;
         sb_region.options.add(opt);
-        if (retlocation.zipcode == arr_publocations[j].zipcode){
-            default_location_Index=j;
-        } 
+        if (retlocation != null) {
+            if (retlocation.zipcode == arr_publocations[j].zipcode){
+                default_location_Index=j;
+            } 
+        }
     }
     // set the default region
     sb_region.options[default_location_Index].defaultSelected=true;
