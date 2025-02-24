@@ -66,6 +66,17 @@
 </body>
 
 <script>
+// different events are used in chrome desktop browser and on apple mobile devices
+// Chrome:          onclick
+// Apple mobile:    ontouchstart
+if (navigator.userAgent.indexOf("Chrome") > -1) {
+    console.log("Chrome");
+    document.getElementById('savechanges').onclick = savelocationSettings;
+}else {
+    // Safari on iphone and ipad uses ontouchstart
+    console.log("No Chrome");
+    document.getElementById('savechanges').ontouchstart = savelocationSettings;
+}    
 
 let locationpubs=[];
 let retlocation = null;
@@ -123,9 +134,10 @@ function init() {;
     }
 }
 
-const btn = document.querySelector('#savechanges');        
-const radioButtons = document.querySelectorAll('input[name="position"]');
-btn.addEventListener("click", () => {
+
+function savelocationSettings() {
+
+    const radioButtons = document.querySelectorAll('input[name="position"]');
     let selectedPosition;
     for (const radioButton of radioButtons) {
         if (radioButton.checked) {
@@ -133,7 +145,6 @@ btn.addEventListener("click", () => {
             break;
         }
     }
-
     switch(selectedPosition) {
             case 'regionpos':
                 let element_selector = document.getElementById('region_selector');
@@ -159,9 +170,10 @@ btn.addEventListener("click", () => {
             default:
             // code block
     }
-    // show the output:
-    
-});
+}
+//const btn = document.querySelector('#savechanges');        
+//btn.addEventListener("click", () => {
+//});
 
 function getValue(radio) {
     console.log('radio selected: ' + radio.value);
