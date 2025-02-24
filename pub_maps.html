@@ -376,7 +376,12 @@
             } 
         }
         // set default schnaittach for region selector
-        sb_region.options[default_region_Index].defaultSelected=true;
+        if (default_region_Index != 0) {
+            sb_region.options[default_region_Index].defaultSelected=true;
+        } else {
+            alert ('Region für zip code nicht gefunden: ' + zipcode);
+        }
+
         //sb_region.options[default_region_Index].setAttribute("selected","selected");
         getregionPubs(sb_region.value);
     }

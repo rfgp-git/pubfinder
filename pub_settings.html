@@ -95,6 +95,7 @@ function init() {;
     document.getElementById('txt_currentpos').style.display = 'none';
     
     let retString = null;
+    let rbtnpos;
         
     // Retrieve the JSON string from local storage
     retString = localStorage.getItem("defaultlocation");
@@ -103,16 +104,17 @@ function init() {;
         retlocation = JSON.parse(retString);
         switch(retlocation.type) {
             case 'regionpos':
-                const defaultradio = document.getElementById('pos1');
-                defaultradio.checked = true;
-                getValue(defaultradio);
+                rbtnpos='pos1';
             break;
             case 'currentpos':
-                
+                rbtnpos='pos2';
             break;
             default:
             // code block
-        }   
+        }
+        const defaultradio = document.getElementById(rbtnpos);
+        defaultradio.checked = true;
+        getValue(defaultradio);   
     }
 
     retString = null;
