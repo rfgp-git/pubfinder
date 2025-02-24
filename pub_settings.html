@@ -149,7 +149,6 @@ function savelocationSettings() {
 
     const radioButtons = document.querySelectorAll('input[name="position"]');
     let selectedPosition;
-    let obj_pubaddr;
     let string;
     for (const radioButton of radioButtons) {
         if (radioButton.checked) {
@@ -161,7 +160,7 @@ function savelocationSettings() {
             case 'regionpos':
                 let element_selector = document.getElementById('region_selector');
                 console.log('selected location: ' + element_selector.value + " " + element_selector[element_selector.selectedIndex].text );
-                obj_pubaddr = {
+                let obj_pubaddr = {
                     "type":     selectedPosition,
                     "zipcode":  element_selector.value,
                     "location": element_selector[element_selector.selectedIndex].text
@@ -176,14 +175,14 @@ function savelocationSettings() {
             break;
             case 'currentpos':
             console.log('selected positon: ' + 'Test' ); 
-            let obj_pubaddr = {
+            let obj_curpos = {
                     "type":     selectedPosition,
                     "zipcode":  curposloc[0],
                     "location": curposloc[1]
                 }
 
                 // Convert the array to a JSON string
-                string = JSON.stringify(obj_pubaddr);
+                string = JSON.stringify(obj_curpos);
 
                 // Store the JSON string in local storage
                 localStorage.setItem("defaultlocation", string);
