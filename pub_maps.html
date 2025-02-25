@@ -70,6 +70,7 @@
     const sb_pubs = document.getElementById('pub_selector');
     let markersArray    = new Array();
     let openInfoWindow = '';
+    let homemarker=null;
 
     // add markers with the address of the selected pub
     // all pub markers of a region are displayed when "Alle" was selected
@@ -118,7 +119,19 @@
     // fill the region and pub selectors
     async function initMap() {
         
+         // Request needed libraries.
+        const { Map } = await google.maps.importLibrary("maps");
+        const {AdvancedMarkerElement} = await google.maps.importLibrary("marker");
+
         let retString = null;
+        let retlocation=null;
+        let locationtype=null;
+        let position=null;
+
+        if (homemarker != null) {
+            homemarker.setMap(null);
+
+        }
         // get pubs from csv
         // Retrieve the JSON string from local storage
         retString = localStorage.getItem("restaurants");
@@ -145,15 +158,43 @@
             // get pub locations
             console.log("getLocations");
             getpubLocations();
-            
+
             // position of schnaittach
-            const position = { lat: 49.559615280175386, lng: 11.340586353371648 };
+            position = { lat: 49.559615280175386, lng: 11.340586353371648 };
             
-            // Request needed libraries.
-            const { Map } = await google.maps.importLibrary("maps");
-            const {AdvancedMarkerElement} = await google.maps.importLibrary("marker");
-            
-            // The map, centered at Schnaittach
+            // Retrieve location settings from local storage
+            retString = localStorage.getItem("defaultlocation");
+            if (retString != null){
+                retlocation = JSON.parse(retString);
+                locationtype = retlocation.type;
+                /*
+                if (retlocation.type == 'currentpos' ) {
+                    position = getCurrentPosition();
+                }
+                */
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        console.log(`Latitude1: ${latitude}, Longitude1: ${longitude}`);
+                        position = {
+                            "lat": latitude,
+                            "lng": longitude
+                        }
+                    },
+                    function(error) {
+                        console.error(`Error Code = ${error.code} - ${error.message}`);
+                    }
+                    );
+                } else {
+                    console.error("Geolocation is not supported by this browser.");
+            }
+        }
+
+           getselectedRegion();
+
+           // The map, centered at Schnaittach
             // mapId defined in the google cloud console
             // mapID is created via https://console.cloud.google.com/
             // Map Management https://console.cloud.google.com/google/maps-apis/studio/maps?inv=1&invt=Aborwg&project=subtle-presence-447610-t2
@@ -163,21 +204,20 @@
                 mapId:"c9787370aaddc781",
             });
 
-            getselectedRegion();
-
-            /*
-            const pinTextGlyph = new google.maps.marker.PinElement({
+            if (retlocation.type == 'currentpos' ) {
+                const pinTextGlyph = new google.maps.marker.PinElement({
                     glyph: "H",
                     glyphColor: "white",
-            });
+                });
 
-            marker = new google.maps.marker.AdvancedMarkerElement({
-            map,
-            position: position,
-            title: "Home",
-            content: pinTextGlyph.element
-            });
-            */
+                homemarker = new google.maps.marker.AdvancedMarkerElement({
+                    map,
+                    position: position,
+                    title: "Home",
+                    content: pinTextGlyph.element
+                });
+            }
+            
         } else {
             alert("Pub Konfiurations-Daten müssen erst importiert werden");
         }
@@ -193,8 +233,8 @@
         geocoder.geocode({ 'address': address }, function(results, status) {
             if (status === 'OK') {
                 const location = results[0].geometry.location;
-                console.log('Latitude: ' + location.lat());
-                console.log('Longitude: ' + location.lng());
+                console.log('Latitude2: ' + location.lat());
+                console.log('Longitude2: ' + location.lng());
 
                 let statuscolor = "red";
                 if (pubopen == true){
@@ -431,7 +471,7 @@
         console.log("region: " + sb_region.value + " " + sb_region.options[sb_region.selectedIndex].text); 
         getregionPubs(sb_region.value);
         let location= sb_region.value + " " + sb_region.options[sb_region.selectedIndex].text;
-        moveToLocation(location);
+        //moveToLocation(location);
     }
 
     // zoom to the selected region
@@ -441,8 +481,8 @@
         geocoder.geocode({ 'address': address }, function(results, status) {
             if (status === 'OK') {
                 const location = results[0].geometry.location;
-                console.log('Latitude: ' + location.lat());
-                console.log('Longitude: ' + location.lng());
+                console.log('Latitude3: ' + location.lat());
+                console.log('Longitude3: ' + location.lng());
                 map.panTo(location);
             } else {
                 console.error('Geocode was not successful for the following reason: ' + status);
@@ -486,7 +526,7 @@
         return newIndex;
     }
 
-    // dummy
+    // function to get the default zipcode configured in the settings page
     function getDefaultZipCode() {
         let retString = null;
         let zipcode=91220;
@@ -502,10 +542,10 @@
         
     }
 
-    // dummy
-    function getselectedPub() {
-        console.log("selected:" + sb_pubs.selectedIndex);
-    }
+// dummy
+function getselectedPub() {
+    console.log("selected:" + sb_pubs.selectedIndex);
+}
 
 </script>
 </html>
